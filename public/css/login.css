@@ -1,0 +1,90 @@
+body{
+    width: 100vw;
+    height: 100vh;
+}
+
+header{
+    
+    height: 15%;
+}
+
+article{
+    position: relative;
+    width: 100%;
+    height: 85%;
+}
+
+section{
+    height: 90%;
+
+}
+
+section article{
+    height: 100%
+}
+
+.Container-Left{
+    background-color: rgb(241, 212, 147);
+    height: 100%;
+    border: none;
+    border-radius: 1rem;
+}
+
+.Container-Left img{
+    height: 60%;
+    margin-left: 3%;
+}
+
+.Container-Left h1{
+    margin-top: 10%;
+    margin-left: 4%;
+    font-size: 250%;
+    text-align: center;
+    font-family: 'STIX Two Math', serif;
+}
+
+.Container-Rigth{
+    position: relative;
+    background-color: #F0A500;
+    height: 80%;
+    margin-left: -20%;
+    border-radius: 1rem;
+}
+
+.Container-Rigth h2{
+    height: 12%;
+    padding-top: 1%;
+    text-align: center;
+    font-family: 'STIX Two Math', serif;
+}
+
+.Container-Rigth form{
+    height: 88%;
+}
+
+form input[type="text"], input[type="email"], input[type="password"]{
+    height: 10%;
+    border-radius: 10rem;
+    font-style: italic;
+} 
+
+::placeholder{
+    font-family: 'Roboto', sans-serif;
+}
+
+.form-control{
+    width: 80%;
+}
+
+form input[type="submit"]{
+    height: 10%;
+    border-radius: 10rem;
+    border: none;
+    background-color: #CF7500;
+    color: #F4F4F4;
+    font-size: 120%;
+}
+
+form input[type="submit"]:hover{
+    background-color: black;
+}
