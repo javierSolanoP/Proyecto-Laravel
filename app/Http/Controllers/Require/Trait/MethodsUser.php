@@ -92,7 +92,28 @@ trait MethodsUser{
 
     public function validateLogin(){
 
+        if(isset($_SESSION['client'])){
+
+            $data = $_SESSION['client'];
+
+            $verifyPassword = password_verify($data->password, $data->confirmPassword);
+
+            if($verifyPassword){
+
+                $login = array('login' => true);
+                return $login;
+
+            }else{
+
+                $login = array('login' => false, 'Error' => 'Contrasenia incorrecta');
+                return $login;
+
+            };
+
+        }
+        
     }
+
     public function recoverPassword(){}
     public function updateData(){}
 

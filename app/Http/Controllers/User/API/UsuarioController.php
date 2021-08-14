@@ -42,44 +42,108 @@ class UsuarioController extends Controller
     public function store(Request $request)
     {
         //Recibir datos:
-        $data = ['nombres' => $request->all('nombres'),
+        $data = ['form' => $request->all('form'),
+                 'nombres' => $request->all('nombres'),
                  'apellido' => $request->all('apellido'),
                  'email' => $request->all('email'),
                  'password' => $request->all('password'),
                  'confirmPassword' => $request->all('confirmPassword'),
                  'rol_id' => $request->all('rol_id'),];
 
-        //Validar el rol:
-        switch($data['rol_id']['rol_id']){
 
-            case 1:
+        //Validamos de cual formulario vienen los datos: 
+        switch($data['form']['form']){
 
-                $client = new Cliente(nombres: $data['nombres']['nombres'],
-                              apellido: $data['apellido']['apellido'],
-                              email: $data['email']['email'],
-                              password: $data['password']['password'],
-                              confirmPassword: $data['confirmPassword']['confirmPassword'],
-                              rol_id: $data['rol_id']['rol_id']);
+            case 'sign-in': 
 
-                              $_SESSION['user'] = $client;
-                              $register = $client->registerData();
+                //Validamos el rol del usuario en el sistema:
+                switch($data['rol_id']['rol_id']){
 
-                              if($register){
-                                  $post = $request->except(['password', 'confirmPassword']);
-                                  $post['password'] = $register['fields']['password'];
-                                  Usuario::create($post);
-                                  return $register;
-                              }else{
-                                  $register;
-                              }
+                    case 1:
+
+                        $client = new Cliente(nombres: $data['nombres']['nombres'],
+                                  apellido: $data['apellido']['apellido'],
+                                  email: $data['email']['email'],
+                                  password: $data['password']['password'],
+                                  confirmPassword: $data['confirmPassword']['confirmPassword'],
+                                  rol_id: $data['rol_id']['rol_id']);
+
+                                  $_SESSION['user'] = $client;
+                                  $register = $client->registerData();
+
+                                  if($register){
+                                      $post = $request->except(['password', 'confirmPassword']);
+                                      $post['password'] = $register['fields']['password'];
+                                      Usuario::create($post);
+                                      return $register;
+                                  }else{
+                                      $register;
+                                  }
+                    break;
+
+                    case 2:
+                        //Modulo administrador
+                    break;
+
+                    default:
+                        $error = array('Error' => "'rol_id' no valido.");
+                        return $error;
+                    break;
+
+                }
+
             break;
 
+            case 'login':
+                
+                //Validamos el rol del usuario en el sistema:
+                switch($data['rol_id']['rol_id']){
+
+                    case 1:
+
+                        $model = Usuario::where('email', '=', $data['email']['email'])->first();
+
+                        if($model){
+
+                            $client = new Cliente(password: $data['password']['password'],
+                                                  confirmPassword: $model['password']);
+
+                            $_SESSION['client'] = $client;
+
+                            $login = $client->validateLogin();
+                            return $login;
+
+                        }else{
+
+                            $login = array('login' => false, 'Error' => 'Email incorrecto.');
+                            return $login;
+
+                        }
+    
+                        return $model['password'];
+                    
+                    break;
+
+                    case 2:
+                        //Modulo administrador
+                    break;
+
+                    default:
+                        $error = array('Error' => "'rol_id' no valido.");
+                        return $error;
+                    break;
+
+                }
+
+            break;
+            
             default:
-             echo "'Rol_id' incorrecto";
-             break;
+                $error = array('Error' => 'Formulario no valido.');
+                return $error;
+            break;
 
         }
-        
+    
     }
 
     /**
