@@ -55,7 +55,7 @@ trait MethodsUser{
                     $verifyPassword     = password_verify($data->password, $encryptePassword);
                    
                     if($verifyPassword){
-                        $validate['password'] = true;
+                        $validate['password'] = $encryptePassword;
                     }else{
                         $validate['password'] = 'Error de verificacion de hash.'; 
                     }
@@ -90,7 +90,9 @@ trait MethodsUser{
         
     }
 
-    public function validateLogin(){}
+    public function validateLogin(){
+
+    }
     public function recoverPassword(){}
     public function updateData(){}
 

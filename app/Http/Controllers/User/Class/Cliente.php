@@ -6,19 +6,17 @@ use App\Http\Controllers\Require\Trait\MethodsUser;
 
 class Cliente extends User  {
    
-    private string  $direccion,
-                    $telefono;
-    private  $estado;
-
-
-    public function __construct(
-                                private string $nombres = '',
+    public function __construct(protected int $id_usuario = 0,
+                                protected string $nombres = '',
                                 protected string $apellido = '',
                                 protected string $email = '',
                                 protected string $password = '',
                                 protected string $confirmPassword = '',
                                 protected string $fechaDeRegistro = '',
-                                protected int $rol_id = 0){}
+                                protected int $rol_id = 0,
+                                private string $direccion = '',
+                                private string $telefono = '',
+                                private $estado = null){}
 
     public function __toString()
     {

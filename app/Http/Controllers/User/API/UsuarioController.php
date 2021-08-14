@@ -62,12 +62,15 @@ class UsuarioController extends Controller
                               rol_id: $data['rol_id']['rol_id']);
 
                               $_SESSION['user'] = $client;
+                              $register = $client->registerData();
 
-                              if($client->registerData()){
-                                  Usuario::create($request->all());
-                                  return $client->registerData();
+                              if($register){
+                                  $post = $request->except(['password', 'confirmPassword']);
+                                  $post['password'] = $register['fields']['password'];
+                                  Usuario::create($post);
+                                  return $register;
                               }else{
-                                  $client->registerData();
+                                  $register;
                               }
             break;
 
