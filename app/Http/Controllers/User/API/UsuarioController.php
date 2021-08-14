@@ -54,6 +54,7 @@ class UsuarioController extends Controller
         //Validamos de cual formulario vienen los datos: 
         switch($data['form']['form']){
 
+            //Formulario de registro:
             case 'sign-in': 
 
                 //Validamos el rol del usuario en el sistema:
@@ -94,6 +95,7 @@ class UsuarioController extends Controller
 
             break;
 
+            //Formulario de Inicio de sesion: 
             case 'login':
                 
                 //Validamos el rol del usuario en el sistema:
@@ -119,8 +121,6 @@ class UsuarioController extends Controller
                             return $login;
 
                         }
-    
-                        return $model['password'];
                     
                     break;
 
