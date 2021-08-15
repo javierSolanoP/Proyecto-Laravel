@@ -61,6 +61,7 @@ class UsuarioController extends Controller
                 //Validamos el rol del usuario en el sistema:
                 switch($data['rol_id']['rol_id']){
 
+                    //Rol de cliente:
                     case 1:
 
                         $client = new Cliente(nombres: $data['nombres']['nombres'],
@@ -83,6 +84,7 @@ class UsuarioController extends Controller
                                   }
                     break;
 
+                    //Rol de administrador:
                     case 2:
                         //Modulo administrador
                     break;
@@ -102,6 +104,7 @@ class UsuarioController extends Controller
                 //Validamos el rol del usuario en el sistema:
                 switch($data['rol_id']['rol_id']){
 
+                    //Rol de cliente:
                     case 1:
 
                         $model = Usuario::where('email', '=', $data['email']['email'])->first();
@@ -125,6 +128,7 @@ class UsuarioController extends Controller
                     
                     break;
 
+                    //Rol de administrador:
                     case 2:
                         //Modulo administrador
                     break;
