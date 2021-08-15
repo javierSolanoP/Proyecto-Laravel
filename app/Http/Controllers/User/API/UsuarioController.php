@@ -190,7 +190,72 @@ class UsuarioController extends Controller
      */
     public function update(Request $request, Usuario $usuario)
     {
-        //
+        $data = array('form' => $request->all('form'),
+                      'password' => $request->all('password'),
+                      'confirmPassword' => $request->all('confirmPassword'),
+                      'rol_id' => $request->all('rol_id'));
+
+        switch($data['form']['form']){
+
+            //Formulario de actualizacion de datos del usuario: 
+            case 'updateUser': 
+
+                //Validamos el rol del usuario en el sistema: 
+                switch($data['rol_id']['rol_id']){
+
+                    //Rol de cliente: 
+                    case 1: 
+
+                    break;
+
+                    //Rol de administrador: 
+                    case 2: 
+
+                    break;
+
+                    default: 
+
+                        $error = array('Error' => "'rol_id' no valido.");
+                        return $error;
+
+                    break;
+                }
+
+            break;
+
+            //Formulario para restablecer contrasenia: 
+            case 'recoverdPassword': 
+
+                 //Validamos el rol del usuario en el sistema: 
+                 switch($data['rol_id']['rol_id']){
+
+                    //Rol de cliente: 
+                    case 1: 
+
+                    break;
+
+                    //Rol de administrador: 
+                    case 2: 
+
+                    break;
+
+                    default: 
+
+                        $error = array('Error' => "'rol_id' no valido.");
+                        return $error;
+
+                    break;
+                }
+
+            break;
+
+            default: 
+
+                $error = array('Error' => 'Formulario no valido.');
+                return $error;
+
+            break;
+        }
     }
 
     /**
