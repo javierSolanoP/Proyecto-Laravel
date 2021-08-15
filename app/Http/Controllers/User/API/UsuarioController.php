@@ -80,6 +80,7 @@ class UsuarioController extends Controller
                                       Usuario::create($post);
                                       return $register;
                                   }else{
+                                      session_destroy($_SESSION['sign-in']);
                                       $register;
                                   }
                     break;
@@ -120,7 +121,8 @@ class UsuarioController extends Controller
                             return $login;
 
                         }else{
-
+                            
+                            session_destroy($_SESSION['login']);
                             $login = array('login' => false, 'Error' => 'Email incorrecto.');
                             return $login;
 
