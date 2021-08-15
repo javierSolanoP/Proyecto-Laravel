@@ -24,7 +24,6 @@ class UsuarioController extends Controller
     {
         $client = new Cliente();
 
-        $client->recoverPassword();
     }
 
     /**
@@ -126,12 +125,13 @@ class UsuarioController extends Controller
                                 return $login;
                             }
 
-                        }else{
-                            
-                            session_destroy($_SESSION['login']);
-                            $login = array('login' => false, 'Error' => 'Email incorrecto.');
-                            return $login;
+                        }else{             
 
+                            $login = array('login' => false, 'Error' => 'Email incorrecto.');
+                            if(!$login){
+                                session_destroy($_SESSION['login']);
+                            }
+                            return $login;
                         }
                     
                     break;

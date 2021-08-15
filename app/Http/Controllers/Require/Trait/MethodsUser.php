@@ -114,7 +114,7 @@ trait MethodsUser{
         }
         
     }
-
+/*
     public function recoverPassword(){
 
         //Revisamos el directorio: 
@@ -134,6 +134,7 @@ trait MethodsUser{
             echo json_encode('ddd');
         }
     }
+    */
     public function updateData(){}
 
 }

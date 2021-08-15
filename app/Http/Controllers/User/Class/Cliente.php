@@ -35,5 +35,3 @@ class Cliente extends User  {
 }
 
 $client = new Cliente();
-
-$client->recoverPassword();
