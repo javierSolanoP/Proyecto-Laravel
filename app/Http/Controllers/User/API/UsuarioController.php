@@ -118,7 +118,13 @@ class UsuarioController extends Controller
                             $_SESSION['login'] = $client;
 
                             $login = $client->validateLogin();
-                            return $login;
+
+                            if($login){
+                                return $login;
+                            }else{
+                                session_destroy($_SESSION['login']);
+                                return $login;
+                            }
 
                         }else{
                             
