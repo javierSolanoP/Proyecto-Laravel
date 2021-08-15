@@ -71,7 +71,7 @@ class UsuarioController extends Controller
                                   confirmPassword: $data['confirmPassword']['confirmPassword'],
                                   rol_id: $data['rol_id']['rol_id']);
 
-                                  $_SESSION['user'] = $client;
+                                  $_SESSION['sign-in'] = $client;
                                   $register = $client->registerData();
 
                                   if($register){
@@ -114,7 +114,7 @@ class UsuarioController extends Controller
                             $client = new Cliente(password: $data['password']['password'],
                                                   confirmPassword: $model['password']);
 
-                            $_SESSION['client'] = $client;
+                            $_SESSION['login'] = $client;
 
                             $login = $client->validateLogin();
                             return $login;

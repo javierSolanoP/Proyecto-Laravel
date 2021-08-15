@@ -6,9 +6,9 @@ trait MethodsUser{
 
     public function registerData(){
         
-        if(isset($_SESSION['user'])){
+        if(isset($_SESSION['sign-in'])){
 
-            $data = $_SESSION['user'];
+            $data = $_SESSION['sign-in'];
             $validate = array();
 
             //Validacion del campo nombre:
@@ -93,9 +93,9 @@ trait MethodsUser{
 
     public function validateLogin(){
 
-        if(isset($_SESSION['client'])){
+        if(isset($_SESSION['login'])){
 
-            $data = $_SESSION['client'];
+            $data = $_SESSION['login'];
 
             $verifyPassword = password_verify($data->password, $data->confirmPassword);
 
