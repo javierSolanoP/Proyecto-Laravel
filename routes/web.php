@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Mail\RecoverdPassword;
+use Illuminate\Support\Facades\Mail;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,5 +20,13 @@ Route::get('/', function () {
 
 //Modulo de Usuario:
 Route::get('/users', function () {
-    return view('UserModule.login');
+    return view('UserModule.signin');
+});
+
+
+Route::get('/users/RecoverdPassword', function(){
+    $email = new RecoverdPassword;
+
+    Mail::to('danielidrobo6@gmail.com')->send($email);
+    return "Email enviado.";
 });

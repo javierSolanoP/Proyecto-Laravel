@@ -22,8 +22,9 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        $user = Usuario::all();
-        return $user;
+        $client = new Cliente();
+
+        $client->recoverPassword();
     }
 
     /**

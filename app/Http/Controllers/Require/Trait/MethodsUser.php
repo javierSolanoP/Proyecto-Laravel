@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Require\Trait;
+
 session_start();
 trait MethodsUser{
 
@@ -114,7 +115,25 @@ trait MethodsUser{
         
     }
 
-    public function recoverPassword(){}
+    public function recoverPassword(){
+
+        //Revisamos el directorio: 
+        if(!is_dir('email')){
+            mkdir('email', 0777) or die(json_encode(['Error' => 'No se pudo crear la carpeta.']));
+        }else{
+            die(json_encode(['Error' => 'Ya existe la carpeta']));
+        }
+
+        //Revisamos los archivos del directorio:
+        if($directory = opendir('./email')){
+            while(false != ($file = readdir($directory))){
+                echo $file;
+            }
+            
+        }else{
+            echo json_encode('ddd');
+        }
+    }
     public function updateData(){}
 
 }

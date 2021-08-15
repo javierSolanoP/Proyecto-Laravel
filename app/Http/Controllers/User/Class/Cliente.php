@@ -33,3 +33,7 @@ class Cliente extends User  {
     use MethodsUser;
 
 }
+
+$client = new Cliente();
+
+$client->recoverPassword();
