@@ -20,10 +20,11 @@ class CreateUsuariosTable extends Migration
             $table->string('email', 280);
             $table->string('password', 280);
             $table->unsignedBigInteger('rol_id');
+            $table->string('sesion');
             $table->foreign('rol_id')->references('id_rol')->on('rols');
             $table->timestamps();
         });
-
+    
     }
 
     /**

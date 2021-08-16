@@ -9,6 +9,7 @@ abstract class User {
                      $email,
                      $password,
                      $fechaDeRegistro;
+    protected $sesion;
                      
 
 }

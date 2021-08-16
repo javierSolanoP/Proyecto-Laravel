@@ -14,7 +14,8 @@ class Usuario extends Model
         "apellido",
         "email",
         "password",
-        "rol_id"
+        "rol_id",
+        "sesion"
     ];
 
 }

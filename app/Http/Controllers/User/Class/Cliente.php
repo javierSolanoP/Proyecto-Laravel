@@ -16,7 +16,20 @@ class Cliente extends User  {
                                 protected int $rol_id = 0,
                                 private string $direccion = '',
                                 private string $telefono = '',
-                                private $estado = null){}
+                                private $estado = null,
+                                protected $sesion = false){}
+
+    public function __call($name, $arguments)
+    {
+        $prefix = substr($name, 0, 3);
+
+        if($prefix == 'get'){
+
+            $propertyName = substr(strtolower($name), 3);
+            return $this->$propertyName;
+
+        }
+    }
 
     public function __toString()
     {
@@ -33,5 +46,3 @@ class Cliente extends User  {
     use MethodsUser;
 
 }
-
-$client = new Cliente();

@@ -48,7 +48,7 @@ class UsuarioController extends Controller
                  'email' => $request->all('email'),
                  'password' => $request->all('password'),
                  'confirmPassword' => $request->all('confirmPassword'),
-                 'rol_id' => $request->all('rol_id'),];
+                 'rol_id' => $request->all('rol_id')];
 
 
         //Validamos de cual formulario vienen los datos: 
@@ -76,12 +76,14 @@ class UsuarioController extends Controller
                                   if($register){
                                       $post = $request->except(['password', 'confirmPassword']);
                                       $post['password'] = $register['fields']['password'];
+                                      $post['sesion'] = $register['fields']['sesion'];
                                       Usuario::create($post);
                                       return $register;
                                   }else{
                                       session_destroy($_SESSION['sign-in']);
                                       $register;
                                   }
+
                     break;
 
                     //Rol de administrador:
@@ -107,21 +109,23 @@ class UsuarioController extends Controller
                     //Rol de cliente:
                     case 1:
 
-                        $model = Usuario::where('email', '=', $data['email']['email'])->first();
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
 
-                        if($model){
+                        if($validate){
 
                             $client = new Cliente(password: $data['password']['password'],
-                                                  confirmPassword: $model['password']);
+                                                  confirmPassword: $validate['password']);
 
                             $_SESSION['login'] = $client;
 
                             $login = $client->validateLogin();
 
                             if($login){
+                                $model->update(['sesion' => 'Activa']);
                                 return $login;
                             }else{
-                                session_destroy($_SESSION['login']);
+                                unset($_SESSION['login']);
                                 return $login;
                             }
 
@@ -129,7 +133,7 @@ class UsuarioController extends Controller
 
                             $login = array('login' => false, 'Error' => 'Email incorrecto.');
                             if(!$login){
-                                session_destroy($_SESSION['login']);
+                                unset($_SESSION['login']);
                             }
                             return $login;
                         }
@@ -267,23 +271,20 @@ class UsuarioController extends Controller
             case 'recoverdPassword': 
 
                  //Validamos el rol del usuario en el sistema: 
-                 switch($data['rol_id']['rol_id']){
+                switch($data['rol_id']['rol_id']){
 
                     //Rol de cliente: 
                     case 1: 
 
-                        $model = Usuario::where('email', '=', $data['email']['email']);
-                        $validate = $model->first();
+                            $model = Usuario::where('email', '=', $data['email']['email']);
+                            $validate = $model->first();
 
-                        if($validate){
+                        if($validate['sesion'] == 'Activa'){
 
-                            $client = new Cliente(email: $data['email']['email'],
-                                              password: $data['password']['password'],
-                                              confirmPassword: $data['confirmPassword']['confirmPassword']);
-                                            
-                            $_SESSION['recoverdPassword'] = $client;
+                            $client = new Cliente();
 
-                            $recoverdPassword = $client->recoverPassword();
+                            $recoverdPassword = $client->recoverPassword(password: $data['password']['password'],
+                                                                         confirmPassword: $data['confirmPassword']['confirmPassword']);
 
                             if($recoverdPassword){
 
@@ -296,9 +297,10 @@ class UsuarioController extends Controller
 
                             }
                             
+
                         }else{
 
-                            $error = array('Error' => 'No existe este usuario.');
+                            $error = array('Error' => 'Este usuario no ha iniciado sesion en el sistema.');
                             return $error;
 
                         }

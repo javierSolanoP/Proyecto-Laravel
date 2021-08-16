@@ -78,6 +78,9 @@ trait MethodsUser{
 
             }
 
+            //Le damos un valor por defecto al campo sesion: 
+            $validate['sesion'] = 'Inactiva';
+
             $response = ['Register' => true, 'fields' => $validate];
 
             return $response;
@@ -115,40 +118,34 @@ trait MethodsUser{
         
     }
 
-    public function recoverPassword(){
+    public function recoverPassword(string $password, string $confirmPassword){
 
-        if(isset($_SESSION['recoverdPassword'])){
+        $recoverdPassword = array();
 
-            $data = $_SESSION['recoverdPassword'];
-            $recoverdPassword = array();
+        if($password == $confirmPassword){
 
-            if($data->password == $data->confirmPassword){
+            $encryptePassword = password_hash($password, PASSWORD_BCRYPT, ['cost' => 4]);
+            $verifyPassword   = password_verify($password, $encryptePassword);
 
-                $encryptePassword = password_hash($data->password, PASSWORD_BCRYPT, ['cost' => 4]);
-                $verifyPassword   = password_verify($data->password, $encryptePassword);
+            if($verifyPassword){
 
-                if($verifyPassword){
+                $recoverdPassword['recoverdPassword'] = true;
+                $recoverdPassword['newPassword'] = $encryptePassword;
 
-                    $recoverdPassword['recoverdPassword'] = true;
-                    $recoverdPassword['newPassword'] = $encryptePassword;
-
-                    return $recoverdPassword;
-
-                }else{
-
-                    $response = ['recoverdPassword' => false, 'Error' => 'No coincide el hash.'];
-                    die(json_encode($response));
-
-                }
+                return $recoverdPassword;
 
             }else{
 
-                $response = ['recoverdPassword' => false, 'Error' => 'No coinciden las contrasenias.'];
+                $response = ['recoverdPassword' => false, 'Error' => 'No coincide el hash.'];
                 die(json_encode($response));
-                
-            }
-        }
-        
-    }
 
+            }
+
+        }else{
+
+            $response = ['recoverdPassword' => false, 'Error' => 'No coinciden las contrasenias.'];
+            die(json_encode($response));
+                
+        }
+    }
 }
