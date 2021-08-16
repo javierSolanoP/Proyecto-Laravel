@@ -148,4 +148,14 @@ trait MethodsUser{
                 
         }
     }
+
+    public function closeSesion($closeSesion){
+
+        if($closeSesion){
+            $response = array('closeSesion' => true);
+            return $response;
+        }
+
+    }
+
 }

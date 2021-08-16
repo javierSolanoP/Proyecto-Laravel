@@ -48,8 +48,8 @@ class UsuarioController extends Controller
                  'email' => $request->all('email'),
                  'password' => $request->all('password'),
                  'confirmPassword' => $request->all('confirmPassword'),
-                 'rol_id' => $request->all('rol_id')];
-
+                 'rol_id' => $request->all('rol_id'),
+                 'closeLogin' => $request->all('closeLogin')];
 
         //Validamos de cual formulario vienen los datos: 
         switch($data['form']['form']){
@@ -151,6 +151,51 @@ class UsuarioController extends Controller
                     break;
 
                 }
+
+            break;
+
+            //Cerrar la sesion del usuario en el sistema: 
+            case 'closeLogin': 
+
+                //Validamos el rol del usuario en el sistema: 
+                switch($data['rol_id']['rol_id']){
+
+                    //Rol de cliente: 
+                    case 1: 
+
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
+
+                        if($validate){
+
+                            $client = new Cliente();
+                            $closeSesion = $client->closeSesion(closeSesion: $data['closeLogin']['closeLogin']);
+    
+                            if($closeSesion){
+    
+                                $model->update(['sesion' => 'Inactiva']);
+                                return $closeSesion;
+
+                            }else{
+
+                                $error = array('Error' => 'No se pudo cerrar la sesion.');
+                                return $error;
+                            }
+
+                        }else{
+
+                            $error = array('Error' => 'No existe este usuario.');
+                            return $error;
+
+                        }
+                       
+                    break;
+                }
+
+            break;
+
+            //Rol de administrador: 
+            case 2: 
 
             break;
             
