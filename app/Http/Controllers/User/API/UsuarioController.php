@@ -71,7 +71,7 @@ class UsuarioController extends Controller
                                   rol_id: $data['rol_id']['rol_id']);
 
                                   $_SESSION['sign-in'] = $client;
-                                  $register = $client->registerData();
+                                  $register = $client->validateData();
 
                                   if($register){
                                       $post = $request->except(['password', 'confirmPassword']);
@@ -191,6 +191,8 @@ class UsuarioController extends Controller
     public function update(Request $request, Usuario $usuario)
     {
         $data = array('form' => $request->all('form'),
+                      'nombres' => $request->all('nombres'),
+                      'apellido' => $request->all('apellido'),
                       'email' => $request->all('email'),
                       'password' => $request->all('password'),
                       'confirmPassword' => $request->all('confirmPassword'),
@@ -206,6 +208,43 @@ class UsuarioController extends Controller
 
                     //Rol de cliente: 
                     case 1: 
+
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
+
+                        if($validate){
+
+                            $client = new Cliente(nombres: $data['nombres']['nombres'],
+                                              apellido: $data['apellido']['apellido'],
+                                              email: $data['email']['email'],
+                                              password: $data['password']['password'],
+                                              confirmPassword: $data['confirmPassword']['confirmPassword']);
+                                            
+                            $_SESSION['sign-in'] = $client;
+
+                            $updateUser = $client->validateData();
+
+                            if($updateUser){
+
+                                $model->update(['nombres' => $data['nombres']['nombres'],
+                                                'apellido' => $data['apellido']['apellido'],
+                                                'email' => $data['email']['email'],
+                                                'password' => $updateUser['fields']['password']]);
+
+                                return array('Register' => $updateUser['Register'], 'fields' => $updateUser['fields']);
+
+                            }else{
+
+                                return $updateUser;
+
+                            }
+                            
+                        }else{
+
+                            $error = array('Error' => 'No existe este usuario.');
+                            return $error;
+
+                        }
 
                     break;
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Require\Trait;
 session_start();
 trait MethodsUser{
 
-    public function registerData(){
+    public function validateData(){
         
         if(isset($_SESSION['sign-in'])){
 
@@ -150,7 +150,5 @@ trait MethodsUser{
         }
         
     }
-    
-    public function updateData(){}
 
 }
