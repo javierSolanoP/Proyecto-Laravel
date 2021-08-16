@@ -191,6 +191,7 @@ class UsuarioController extends Controller
     public function update(Request $request, Usuario $usuario)
     {
         $data = array('form' => $request->all('form'),
+                      'email' => $request->all('email'),
                       'password' => $request->all('password'),
                       'confirmPassword' => $request->all('confirmPassword'),
                       'rol_id' => $request->all('rol_id'));
@@ -231,6 +232,37 @@ class UsuarioController extends Controller
 
                     //Rol de cliente: 
                     case 1: 
+
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
+
+                        if($validate){
+
+                            $client = new Cliente(email: $data['email']['email'],
+                                              password: $data['password']['password'],
+                                              confirmPassword: $data['confirmPassword']['confirmPassword']);
+                                            
+                            $_SESSION['recoverdPassword'] = $client;
+
+                            $recoverdPassword = $client->recoverPassword();
+
+                            if($recoverdPassword){
+
+                                $model->update(['password' => $recoverdPassword['newPassword']]);
+                                return array('recoverdPassword' => $recoverdPassword['recoverdPassword']);
+
+                            }else{
+
+                                return $recoverdPassword;
+
+                            }
+                            
+                        }else{
+
+                            $error = array('Error' => 'No existe este usuario.');
+                            return $error;
+
+                        }
 
                     break;
 

@@ -19,4 +19,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });*/
 
 Route::apiResource('users', 'App\Http\Controllers\User\API\UsuarioController');
-Route::apiResource('roles', 'App\Http\Controllers\User\API\RolController');
+Route::apiResource('users/update', 'App\Http\Controllers\User\API\UsuarioController');

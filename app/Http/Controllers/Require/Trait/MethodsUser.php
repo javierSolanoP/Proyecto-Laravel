@@ -114,27 +114,43 @@ trait MethodsUser{
         }
         
     }
-/*
+
     public function recoverPassword(){
 
-        //Revisamos el directorio: 
-        if(!is_dir('email')){
-            mkdir('email', 0777) or die(json_encode(['Error' => 'No se pudo crear la carpeta.']));
-        }else{
-            die(json_encode(['Error' => 'Ya existe la carpeta']));
-        }
+        if(isset($_SESSION['recoverdPassword'])){
 
-        //Revisamos los archivos del directorio:
-        if($directory = opendir('./email')){
-            while(false != ($file = readdir($directory))){
-                echo $file;
+            $data = $_SESSION['recoverdPassword'];
+            $recoverdPassword = array();
+
+            if($data->password == $data->confirmPassword){
+
+                $encryptePassword = password_hash($data->password, PASSWORD_BCRYPT, ['cost' => 4]);
+                $verifyPassword   = password_verify($data->password, $encryptePassword);
+
+                if($verifyPassword){
+
+                    $recoverdPassword['recoverdPassword'] = true;
+                    $recoverdPassword['newPassword'] = $encryptePassword;
+
+                    return $recoverdPassword;
+
+                }else{
+
+                    $response = ['recoverdPassword' => false, 'Error' => 'No coincide el hash.'];
+                    die(json_encode($response));
+
+                }
+
+            }else{
+
+                $response = ['recoverdPassword' => false, 'Error' => 'No coinciden las contrasenias.'];
+                die(json_encode($response));
+                
             }
-            
-        }else{
-            echo json_encode('ddd');
         }
+        
     }
-    */
+    
     public function updateData(){}
 
 }
