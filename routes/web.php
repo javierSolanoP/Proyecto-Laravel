@@ -30,3 +30,6 @@ Route::get('/users/RecoverdPassword', function(){
     Mail::to('danielidrobo6@gmail.com')->send($email);
     return "Email enviado.";
 });
+
+Route::get('/admin', 'App\Http\Controllers\Admin\API\AdministradorController@receiveData');
+Route::get('/admin/admin', 'App\Http\Controllers\Admin\API\ConnectUser@p');

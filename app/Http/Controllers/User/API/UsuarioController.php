@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\User\API;
 
+use App\Http\Controllers\Admin\API\AdministradorController;
 use App\Http\Controllers\User\Class\Cliente;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
+use DateTime;
 use Illuminate\Http\Request; 
 
 class UsuarioController extends Controller
@@ -22,7 +24,10 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        $client = new Cliente();
+        $client = new Cliente;
+
+        $client->receiveConnect('Yes, connect');
+        return "Yes connect";
 
     }
 
@@ -123,6 +128,7 @@ class UsuarioController extends Controller
 
                             if($login){
                                 $model->update(['sesion' => 'Activa']);
+                                setcookie('email', $validate['email']);
                                 return $login;
                             }else{
                                 unset($_SESSION['login']);
@@ -324,7 +330,20 @@ class UsuarioController extends Controller
                             $model = Usuario::where('email', '=', $data['email']['email']);
                             $validate = $model->first();
 
-                        if($validate['sesion'] == 'Activa'){
+                            $model->update(['sesion' => 'Pendiente']);
+
+                            $currentDate = new DateTime();
+                            $dateOfExpire = date('Y-m-d H:i:s', strtotime($validate['updated_at']. '+10 minutes'));
+
+                            if($currentDate->format('Y-m-d H:i:s') == $dateOfExpire){
+                                return "Yes";
+                            }
+
+                        /*if($validate){
+
+                            $model->update(['sesion' => 'Pendiente']);
+
+                            $dateOfExpire = time();
 
                             $client = new Cliente();
 
@@ -348,7 +367,7 @@ class UsuarioController extends Controller
                             $error = array('Error' => 'Este usuario no ha iniciado sesion en el sistema.');
                             return $error;
 
-                        }
+                        }*/
 
                     break;
 

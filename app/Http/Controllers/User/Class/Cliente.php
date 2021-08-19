@@ -3,6 +3,7 @@ namespace App\Http\Controllers\User\Class;
 
 use App\Http\Controllers\Require\AbstractClass\User;
 use App\Http\Controllers\Require\Trait\MethodsUser;
+use App\Http\Controllers\Require\Trait\MethodsConnect;
 
 class Cliente extends User  {
    
@@ -31,18 +32,7 @@ class Cliente extends User  {
         }
     }
 
-    public function __toString()
-    {
-        return 
-              "Nombres: {$this->nombres}\n"
-              ."Apellido: {$this->apellido}\n"
-              ."Email: {$this->email}\n"
-              ."password: {$this->password}\n"
-              ."confirmPassword: {$this->confirmPassword}\n"
-              ."rol_id: {$this->rol_id}\n";
-              
-    }
-
     use MethodsUser;
+    use MethodsConnect;
 
 }
