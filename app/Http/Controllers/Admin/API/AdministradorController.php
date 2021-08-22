@@ -57,4 +57,22 @@ class AdministradorController extends Controller
                 }
 
     }
+
+    public function closeSesion()
+    {
+
+        //Recibe los datos del modulo User: 
+        $connect = new Administrador;
+        $data = $connect->deliverConnect();
+ 
+        //Realiza la validacion: 
+        $admin = new Administrador;
+
+        $closeSesion = $admin->closeSesion(closeSesion: $data);
+
+        if($closeSesion){
+            return $closeSesion;
+        }
+
+    }
 }

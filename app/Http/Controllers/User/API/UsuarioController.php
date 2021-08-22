@@ -239,7 +239,7 @@ class UsuarioController extends Controller
 
                         if($validate){
 
-                            $client = new Cliente();
+                            $client = new Cliente;
                             $closeSesion = $client->closeSesion(closeSesion: $data['closeLogin']['closeLogin']);
     
                             if($closeSesion){
@@ -261,12 +261,43 @@ class UsuarioController extends Controller
                         }
                        
                     break;
+
+                    //Rol de administrador: 
+                    case 2: 
+
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
+
+                        if($validate){
+
+                            //Envio los datos al modulo Admin: 
+                            $connect = new Cliente;
+                            $connect->receiveConnect($data['closeLogin']['closeLogin']);
+
+                            //Recibimos la respuesta del modulo Admin: 
+                            $admin = new AdministradorController;
+                            $closeSesion =  $admin->closeSesion();
+
+                            if($closeSesion){
+            
+                                $model->update(['sesion' => 'Inactiva']);
+                                return $closeSesion;
+
+                            }else{
+
+                                $error = array('Error' => 'No se pudo cerrar la sesion.');
+                                return $error;
+                            }
+
+                        }else{
+
+                            $error = array('Error' => 'No existe este usuario.');
+                            return $error;
+
+                        }
+
+                    break;
                 }
-
-            break;
-
-            //Rol de administrador: 
-            case 2: 
 
             break;
             
