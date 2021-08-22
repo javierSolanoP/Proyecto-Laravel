@@ -8,12 +8,13 @@ use App\Http\Controllers\Admin\Class\Administrador;
 class AdministradorController extends Controller
 {
 
-    //Recibe los datos del modulo User: 
     public function validateData()
     {
+        //Recibe los datos del modulo User: 
         $connect = new Administrador;
         $data = $connect->deliverConnect();
 
+        //Realiza la validacion: 
         $admin = new Administrador(nombres: $data['nombres']['nombres'],
                                    apellido: $data['apellido']['apellido'],
                                    email: $data['email']['email'],
@@ -31,5 +32,29 @@ class AdministradorController extends Controller
                     $register;
                 }     
                 
+    }
+
+    public function validateLogin(){
+
+        //Recibe los datos del modulo User: 
+        $connect = new Administrador;
+        $data = $connect->deliverConnect();
+ 
+        //Realiza la validacion: 
+        $admin = new Administrador(email: $data['email'],
+                                   password: $data['password'],
+                                   confirmPassword: $data['confirmPassword']);
+
+                $_SESSION['login'] = $admin;
+
+                $login = $admin->validateLogin();
+
+                if($login){
+                    return $login;
+                }else{
+                    session_destroy($_SESSION['login']);
+                    $login;
+                }
+
     }
 }

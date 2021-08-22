@@ -65,49 +65,71 @@ class UsuarioController extends Controller
                     //Rol de cliente:
                     case 1:
 
-                        $client = new Cliente(nombres: $data['nombres']['nombres'],
-                                  apellido: $data['apellido']['apellido'],
-                                  email: $data['email']['email'],
-                                  password: $data['password']['password'],
-                                  confirmPassword: $data['confirmPassword']['confirmPassword'],
-                                  rol_id: $data['rol_id']['rol_id']);
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
 
-                                  $_SESSION['sign-in'] = $client;
-                                  $register = $client->validateData();
+                        if($validate['email'] != $data['email']['email']){
 
-                                  if($register){
-                                      $post = $request->except(['password', 'confirmPassword']);
-                                      $post['password'] = $register['fields']['password'];
-                                      $post['sesion'] = $register['fields']['sesion'];
-                                      Usuario::create($post);
-                                      return $register;
-                                  }else{
-                                      session_destroy($_SESSION['sign-in']);
-                                      $register;
-                                  }
+                            $client = new Cliente(nombres: $data['nombres']['nombres'],
+                            apellido: $data['apellido']['apellido'],
+                            email: $data['email']['email'],
+                            password: $data['password']['password'],
+                            confirmPassword: $data['confirmPassword']['confirmPassword'],
+                            rol_id: $data['rol_id']['rol_id']);
+
+                            $_SESSION['sign-in'] = $client;
+                            $register = $client->validateData();
+
+                            if($register){
+                                $post = $request->except(['password', 'confirmPassword']);
+                                $post['password'] = $register['fields']['password'];
+                                $post['sesion'] = $register['fields']['sesion'];
+                                Usuario::create($post);
+                                return $register;
+                            }else{
+                                session_destroy($_SESSION['sign-in']);
+                                $register;
+                            }
+
+                        }else{
+
+                            $register = ['Register' => false, 'Error' => 'Este usuario ya existe en la base de datos.'];
+                            return $register;
+                        }
 
                     break;
 
                     //Rol de administrador:
                     case 2:
-                          
-                        //Envio los datos al modulo Admin: 
-                        $connect = new Cliente;
-                        $connect->receiveConnect($data);
 
-                        //Recibimos la respuesta del modulo Admin: 
-                        $admin = new AdministradorController;
-                        $register =  $admin->validateData();
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
 
-                        if($register){
-                            $post = $request->except(['password', 'confirmPassword']);
-                            $post['password'] = $register['fields']['password'];
-                            $post['sesion'] = $register['fields']['sesion'];
-                            Usuario::create($post);
-                            return $register;
+                        if($validate['email'] != $data['email']['email']){
+                            
+                            //Envio los datos al modulo Admin: 
+                            $connect = new Cliente;
+                            $connect->receiveConnect($data);
+
+                            //Recibimos la respuesta del modulo Admin: 
+                            $admin = new AdministradorController;
+                            $register =  $admin->validateData();
+
+                            if($register){
+                                $post = $request->except(['password', 'confirmPassword']);
+                                $post['password'] = $register['fields']['password'];
+                                $post['sesion'] = $register['fields']['sesion'];
+                                Usuario::create($post);
+                                return $register;
+                            }else{
+                                $register;
+                            }
+
                         }else{
-                            session_destroy($_SESSION['sign-in']);
-                            $register;
+
+                            $register = ['Register' => false, 'Error' => 'Este usuario ya existe en la base de datos.'];
+                            return $register;
+                            
                         }
                         
                     break;
@@ -164,7 +186,34 @@ class UsuarioController extends Controller
 
                     //Rol de administrador:
                     case 2:
-                        //Modulo administrador
+
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
+
+                        if($validate){
+
+                            //Envio los datos al modulo Admin: 
+                            $connect = new Cliente;
+                            $sendData = ['email' => $data['email']['email'],
+                                         'password' => $data['password']['password'], 
+                                         'confirmPassword' => $validate['password']];
+
+
+                            $connect->receiveConnect($sendData);
+    
+                            //Recibimos la respuesta del modulo Admin: 
+                            $admin = new AdministradorController;
+                            $login =  $admin->validateLogin();
+
+                            if($login){
+                                $model->update(['sesion' => 'Activa']);
+                                setcookie('email', $validate['email']);
+                                return $login;
+                            }else{
+                                return $login;
+                            }
+                        }
+
                     break;
 
                     default:
