@@ -17,4 +17,6 @@ class Connect{
     {
         return $this->data;
     }
+    
+
 }

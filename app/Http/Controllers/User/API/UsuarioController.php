@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\User\API;
 
-use App\Http\Controllers\Admin\API\AdministradorController;
 use App\Http\Controllers\User\Class\Cliente;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\API\AdministradorController;
 use App\Models\Usuario;
 use DateTime;
 use Illuminate\Http\Request; 
@@ -15,6 +15,7 @@ class UsuarioController extends Controller
     public function prueba()
     {
         $data = array('nombres' => true);
+        
 
     }
     /**
@@ -24,11 +25,7 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        $client = new Cliente;
-
-        $client->receiveConnect('Yes, connect');
-        return "Yes connect";
-
+        return "sdgklasgdhjksdhgaljks";
     }
 
     /**
@@ -93,7 +90,26 @@ class UsuarioController extends Controller
 
                     //Rol de administrador:
                     case 2:
-                        //Modulo administrador
+                          
+                        //Envio los datos al modulo Admin: 
+                        $connect = new Cliente;
+                        $connect->receiveConnect($data);
+
+                        //Recibimos la respuesta del modulo Admin: 
+                        $admin = new AdministradorController;
+                        $register =  $admin->validateData();
+
+                        if($register){
+                            $post = $request->except(['password', 'confirmPassword']);
+                            $post['password'] = $register['fields']['password'];
+                            $post['sesion'] = $register['fields']['sesion'];
+                            Usuario::create($post);
+                            return $register;
+                        }else{
+                            session_destroy($_SESSION['sign-in']);
+                            $register;
+                        }
+                        
                     break;
 
                     default:

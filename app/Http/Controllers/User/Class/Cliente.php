@@ -33,6 +33,5 @@ class Cliente extends User  {
     }
 
     use MethodsUser;
-    use MethodsConnect;
-
+    use MethodsConnect;  
 }

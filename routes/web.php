@@ -31,5 +31,5 @@ Route::get('/users/RecoverdPassword', function(){
     return "Email enviado.";
 });
 
-Route::get('/admin', 'App\Http\Controllers\Admin\API\AdministradorController@receiveData');
+Route::get('/admin', 'App\Http\Controllers\Admin\API\AdministradorController@validateData');
 Route::get('/admin/admin', 'App\Http\Controllers\Admin\API\ConnectUser@p');

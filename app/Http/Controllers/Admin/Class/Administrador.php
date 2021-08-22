@@ -33,6 +33,5 @@ class Administrador extends User{
     }
 
     use MethodsUser;
-    use MethodsConnect;
-
+    use MethodsConnect;  
 }
