@@ -430,6 +430,11 @@ class UsuarioController extends Controller
 
                             }
                             
+                        }else{
+
+                            $error = array('Error' => 'No existe este usuario.');
+                            return $error;
+
                         }
 
                     break;
