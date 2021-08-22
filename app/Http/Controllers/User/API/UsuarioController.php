@@ -456,49 +456,59 @@ class UsuarioController extends Controller
                 switch($data['rol_id']['rol_id']){
 
                     //Rol de cliente: 
+
                     case 1: 
 
-                            $model = Usuario::where('email', '=', $data['email']['email']);
-                            $validate = $model->first();
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
+
+                        $currentDate = new DateTime();
+
+                        //Primera solicitud de restablecimiento: 
+                        if($validate['sesion'] == 'Inactiva'){
 
                             $model->update(['sesion' => 'Pendiente']);
 
-                            $currentDate = new DateTime();
+                            $dateOfExpire = date('Y-m-d H:i:s', strtotime($validate['updated_at']. '+10 minutes'));
+
+                            if($currentDate->format('Y-m-d H:i:s') != $dateOfExpire){
+
+                                $client = new Cliente();
+                                $recoverdPassword = $client->recoverPassword(password: $data['password']['password'],
+                                                                             confirmPassword: $data['confirmPassword']['confirmPassword']);
+        
+                                if($recoverdPassword){
+        
+                                    $model->update(['password' => $recoverdPassword['newPassword']]);
+                                    return array('recoverdPassword' => $recoverdPassword['recoverdPassword']);
+        
+                                }else{
+        
+                                    return $recoverdPassword;
+        
+                                }
+
+                            }
+
+                         //Segunda solicitud de restablecimiento: 
+                        }elseif($validate['sesion'] == 'Pendiente'){
+
                             $dateOfExpire = date('Y-m-d H:i:s', strtotime($validate['updated_at']. '+10 minutes'));
 
                             if($currentDate->format('Y-m-d H:i:s') == $dateOfExpire){
-                                return "Yes";
-                            }
 
-                        /*if($validate){
-
-                            $model->update(['sesion' => 'Pendiente']);
-
-                            $dateOfExpire = time();
-
-                            $client = new Cliente();
-
-                            $recoverdPassword = $client->recoverPassword(password: $data['password']['password'],
-                                                                         confirmPassword: $data['confirmPassword']['confirmPassword']);
-
-                            if($recoverdPassword){
-
-                                $model->update(['password' => $recoverdPassword['newPassword']]);
-                                return array('recoverdPassword' => $recoverdPassword['recoverdPassword']);
-
-                            }else{
-
+                                $model->update(['sesion' => 'Inactiva']);
+                                $recoverdPassword = ['recoverdPassword' => false, 'Error' => 'Ha excedido el tiempo limite de espera.'];
                                 return $recoverdPassword;
 
                             }
                             
-
                         }else{
-
-                            $error = array('Error' => 'Este usuario no ha iniciado sesion en el sistema.');
+        
+                            $error = array('recoverdPassword' => false, 'Error' => 'Este usuario ya inicio sesion en el sistema.');
                             return $error;
-
-                        }*/
+        
+                        }
 
                     break;
 
