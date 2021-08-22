@@ -402,6 +402,36 @@ class UsuarioController extends Controller
                     //Rol de administrador: 
                     case 2: 
 
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
+
+                        if($validate){
+
+                            //Envio los datos al modulo Admin: 
+                            $connect = new Cliente;
+                            $connect->receiveConnect($data);
+ 
+                            //Recibimos la respuesta del modulo Admin: 
+                            $admin = new AdministradorController;
+                            $updateUser =  $admin->validateData();
+ 
+                            if($updateUser){
+
+                                $model->update(['nombres' => $data['nombres']['nombres'],
+                                                'apellido' => $data['apellido']['apellido'],
+                                                'email' => $data['email']['email'],
+                                                'password' => $updateUser['fields']['password']]);
+
+                                return array('Register' => $updateUser['Register'], 'fields' => $updateUser['fields']);
+
+                            }else{
+
+                                return $updateUser;
+
+                            }
+                            
+                        }
+
                     break;
 
                     default: 
