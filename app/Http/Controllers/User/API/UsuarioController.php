@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User\API;
 use App\Http\Controllers\User\Class\Cliente;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Admin\API\AdministradorController;
+use App\Models\Direccion;
 use App\Models\Usuario;
 use DateTime;
 use Illuminate\Http\Request; 
@@ -68,7 +69,7 @@ class UsuarioController extends Controller
                         $model = Usuario::where('email', '=', $data['email']['email']);
                         $validate = $model->first();
 
-                        if($validate['email'] != $data['email']['email']){
+                        if(!$validate){
 
                             $client = new Cliente(nombres: $data['nombres']['nombres'],
                             apellido: $data['apellido']['apellido'],
@@ -105,7 +106,7 @@ class UsuarioController extends Controller
                         $model = Usuario::where('email', '=', $data['email']['email']);
                         $validate = $model->first();
 
-                        if($validate['email'] != $data['email']['email']){
+                        if(!$validate){
                             
                             //Envio los datos al modulo Admin: 
                             $connect = new Cliente;
@@ -239,18 +240,27 @@ class UsuarioController extends Controller
 
                         if($validate){
 
-                            $client = new Cliente;
-                            $closeSesion = $client->closeSesion(closeSesion: $data['closeLogin']['closeLogin']);
+                            if($validate['sesion'] == 'Activa'){
+                                
+                                $client = new Cliente;
+                                $closeSesion = $client->closeSesion(closeSesion: $data['closeLogin']['closeLogin']);
+        
+                                if($closeSesion){
+        
+                                    $model->update(['sesion' => 'Inactiva']);
+                                    return $closeSesion;
     
-                            if($closeSesion){
+                                }else{
     
-                                $model->update(['sesion' => 'Inactiva']);
-                                return $closeSesion;
+                                    $error = ['Error' => 'No se pudo cerrar la sesion.'];
+                                    return $error;
+                                }
 
                             }else{
 
-                                $error = array('Error' => 'No se pudo cerrar la sesion.');
+                                $error = ['Error' => 'Este usuario no ha iniciado sesion.'];
                                 return $error;
+
                             }
 
                         }else{
@@ -268,30 +278,39 @@ class UsuarioController extends Controller
                         $model = Usuario::where('email', '=', $data['email']['email']);
                         $validate = $model->first();
 
-                        if($validate){
+                        if($validate){ 
 
-                            //Envio los datos al modulo Admin: 
-                            $connect = new Cliente;
-                            $connect->receiveConnect($data['closeLogin']['closeLogin']);
+                            if($validate['sesion'] == 'Activa'){
 
-                            //Recibimos la respuesta del modulo Admin: 
-                            $admin = new AdministradorController;
-                            $closeSesion =  $admin->closeSesion();
+                                //Envio los datos al modulo Admin: 
+                                $connect = new Cliente;
+                                $connect->receiveConnect($data['closeLogin']['closeLogin']);
 
-                            if($closeSesion){
-            
-                                $model->update(['sesion' => 'Inactiva']);
-                                return $closeSesion;
+                                //Recibimos la respuesta del modulo Admin: 
+                                $admin = new AdministradorController;
+                                $closeSesion =  $admin->closeSesion();
+
+                                if($closeSesion){
+                
+                                    $model->update(['sesion' => 'Inactiva']);
+                                    return $closeSesion;
+
+                                }else{
+
+                                    $error = array('Error' => 'No se pudo cerrar la sesion.');
+                                    return $error;
+                                }
 
                             }else{
 
-                                $error = array('Error' => 'No se pudo cerrar la sesion.');
+                                $error = ['Error' => 'Este usuario no ha iniciado sesion.'];
                                 return $error;
+
                             }
 
                         }else{
 
-                            $error = array('Error' => 'No existe este usuario.');
+                            $error = ['Error' => 'No existe este usuario.'];
                             return $error;
 
                         }
@@ -339,7 +358,7 @@ class UsuarioController extends Controller
      * @param  \App\Models\Usuario  $usuario
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Usuario $usuario)
+    public function update(Request $request)
     {
         $data = array('form' => $request->all('form'),
                       'nombres' => $request->all('nombres'),
@@ -347,7 +366,11 @@ class UsuarioController extends Controller
                       'email' => $request->all('email'),
                       'password' => $request->all('password'),
                       'confirmPassword' => $request->all('confirmPassword'),
-                      'rol_id' => $request->all('rol_id'));
+                      'rol_id' => $request->all('rol_id'),
+                      'calle' => $request->all('calle'),
+                      'departamento' => $request->all('departamento'),
+                      'municipio' => $request->all('municipio'),
+                      'codigo_postal' => $request->all('codigo_postal'));
 
         switch($data['form']['form']){
 
@@ -381,6 +404,14 @@ class UsuarioController extends Controller
                                                 'apellido' => $data['apellido']['apellido'],
                                                 'email' => $data['email']['email'],
                                                 'password' => $updateUser['fields']['password']]);
+
+                                $insert = ['calle' => $data['calle']['calle'],
+                                           'departamento' => $data['departamento']['departamento'],
+                                           'municipio' => $data['municipio']['municipio'],
+                                           'codigo_postal' => $data['codigo_postal']['codigo_postal'],
+                                           'usuario_id' => $validate['id_usuario']]; 
+
+                                Direccion::create($insert);
 
                                 return array('Register' => $updateUser['Register'], 'fields' => $updateUser['fields']);
 
@@ -421,6 +452,14 @@ class UsuarioController extends Controller
                                                 'apellido' => $data['apellido']['apellido'],
                                                 'email' => $data['email']['email'],
                                                 'password' => $updateUser['fields']['password']]);
+
+                                $insert = ['calle' => $data['calle']['calle'],
+                                            'departamento' => $data['departamento']['departamento'],
+                                            'municipio' => $data['municipio']['municipio'],
+                                            'codigo_postal' => $data['codigo_postal']['codigo_postal'],
+                                            'usuario_id' => $validate['id_usuario']]; 
+     
+                                Direccion::create($insert);
 
                                 return array('Register' => $updateUser['Register'], 'fields' => $updateUser['fields']);
 
@@ -464,7 +503,7 @@ class UsuarioController extends Controller
 
                         $currentDate = new DateTime();
 
-                        //Primera solicitud de restablecimiento: 
+                        //Solicitud inicial de restablecimiento: 
                         if($validate['sesion'] == 'Inactiva'){
 
                             $model->update(['sesion' => 'Pendiente']);
@@ -490,7 +529,7 @@ class UsuarioController extends Controller
 
                             }
 
-                         //Segunda solicitud de restablecimiento: 
+                         //Solicitud final de restablecimiento: 
                         }elseif($validate['sesion'] == 'Pendiente'){
 
                             $dateOfExpire = date('Y-m-d H:i:s', strtotime($validate['updated_at']. '+10 minutes'));
