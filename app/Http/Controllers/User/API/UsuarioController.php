@@ -9,6 +9,8 @@ use App\Models\Direccion;
 use App\Models\Usuario;
 use DateTime;
 use Illuminate\Http\Request; 
+use App\Mail\RecoverdPassword;
+use Illuminate\Support\Facades\Mail;
 
 class UsuarioController extends Controller
 {
@@ -510,6 +512,12 @@ class UsuarioController extends Controller
 
                             $dateOfExpire = date('Y-m-d H:i:s', strtotime($validate['updated_at']. '+10 minutes'));
 
+                            //Envio el email de restablecimiento: 
+                            $email = new RecoverdPassword;
+
+                            Mail::to('javimausp0801@gmail.com')->send($email);
+
+                            //valido la fecha actual con la de expiracion: 
                             if($currentDate->format('Y-m-d H:i:s') != $dateOfExpire){
 
                                 $client = new Cliente();
@@ -534,6 +542,7 @@ class UsuarioController extends Controller
 
                             $dateOfExpire = date('Y-m-d H:i:s', strtotime($validate['updated_at']. '+10 minutes'));
 
+                            //valido la fecha actual con la de expiracion: 
                             if($currentDate->format('Y-m-d H:i:s') == $dateOfExpire){
 
                                 $model->update(['sesion' => 'Inactiva']);
@@ -553,6 +562,68 @@ class UsuarioController extends Controller
 
                     //Rol de administrador: 
                     case 2: 
+
+                        $model = Usuario::where('email', '=', $data['email']['email']);
+                        $validate = $model->first();
+
+                        $currentDate = new DateTime();
+
+                        //Solicitud inicial de restablecimiento: 
+                        if($validate['sesion'] == 'Inactiva'){
+
+                            $model->update(['sesion' => 'Pendiente']);
+
+                            $dateOfExpire = date('Y-m-d H:i:s', strtotime($validate['updated_at']. '+10 minutes'));
+
+                            //Envio el email de restablecimiento: 
+                            $email = new RecoverdPassword;
+
+                            Mail::to('javimausp0801@gmail.com')->send($email);
+
+                            //valido la fecha actual con la de expiracion: 
+                            if($currentDate->format('Y-m-d H:i:s') != $dateOfExpire){
+
+                                //Envio los datos al modulo Admin: 
+                                $client = new Cliente;
+                                $client->receiveConnect($data);
+
+                                //Recibimos la respuesta del modulo Admin: 
+                                $admin = new AdministradorController;
+                                $recoverdPassword = $admin->recoverPassword();
+        
+                                if($recoverdPassword){
+        
+                                    $model->update(['password' => $recoverdPassword['newPassword']]);
+                                    return array('recoverdPassword' => $recoverdPassword['recoverdPassword']);
+        
+                                }else{
+        
+                                    return $recoverdPassword;
+        
+                                }
+
+                            }
+
+                         //Solicitud final de restablecimiento: 
+                        }elseif($validate['sesion'] == 'Pendiente'){
+
+                            $dateOfExpire = date('Y-m-d H:i:s', strtotime($validate['updated_at']. '+10 minutes'));
+
+                            //valido la fecha actual con la de expiracion: 
+                            if($currentDate->format('Y-m-d H:i:s') == $dateOfExpire){
+
+                                $model->update(['sesion' => 'Inactiva']);
+                                $recoverdPassword = ['recoverdPassword' => false, 'Error' => 'Ha excedido el tiempo limite de espera.'];
+                                return $recoverdPassword;
+
+                            }
+                            
+                        }else{
+        
+                            $error = array('recoverdPassword' => false, 'Error' => 'Este usuario ya inicio sesion en el sistema.');
+                            return $error;
+        
+                        }
 
                     break;
 

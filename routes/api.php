@@ -20,3 +20,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::apiResource('users', 'App\Http\Controllers\User\API\UsuarioController');
 Route::apiResource('users/update', 'App\Http\Controllers\User\API\UsuarioController');
+
+Route::apiResource('admin', 'App\Http\Controllers\Admin\API\AdministradorController');
