@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Admin\API\AdministradorController;
 use App\Models\Direccion;
 use App\Models\Usuario;
+use App\Models\Rol;
 use DateTime;
 use Illuminate\Http\Request; 
 use App\Mail\RecoverdPassword;
@@ -61,6 +62,20 @@ class UsuarioController extends Controller
 
             //Formulario de registro:
             case 'sign-in': 
+
+                //Insertamos los roles por primera vez en la tabla 'rols': 
+                $roleClient = Rol::where('id_rol', '=', 1)->first();
+                $roleAdmin  = Rol::where('id_rol', '=', 2)->first();
+
+                if(!$roleClient || !$roleAdmin){
+
+                    match($data['rol_id']['rol_id']){
+                        1 => Rol::create(['nombre_rol' => 'Cliente']),
+                        2 => Rol::create(['nombre_rol' => 'Administrador']),
+                        default => die("'rol_id' no válido")
+                    };
+
+                }
 
                 //Validamos el rol del usuario en el sistema:
                 switch($data['rol_id']['rol_id']){
