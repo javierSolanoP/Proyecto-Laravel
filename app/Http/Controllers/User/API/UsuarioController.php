@@ -57,23 +57,37 @@ class UsuarioController extends Controller
                  'rol_id' => $request->all('rol_id'),
                  'closeLogin' => $request->all('closeLogin')];
 
+
         //Validamos de cual formulario vienen los datos: 
         switch($data['form']['form']){
 
             //Formulario de registro:
             case 'sign-in': 
 
-                //Insertamos los roles por primera vez en la tabla 'rols': 
+                 //Insertamos los roles por primera vez en la tabla 'rols': 
                 $roleClient = Rol::where('id_rol', '=', 1)->first();
                 $roleAdmin  = Rol::where('id_rol', '=', 2)->first();
 
-                if(!$roleClient || !$roleAdmin){
+                if($data['rol_id']['rol_id'] == 1){
 
-                    match($data['rol_id']['rol_id']){
-                        1 => Rol::create(['nombre_rol' => 'Cliente']),
-                        2 => Rol::create(['nombre_rol' => 'Administrador']),
-                        default => die("'rol_id' no válido")
-                    };
+                    if(!$roleClient){
+                        Rol::create(['nombre_rol' => 'Cliente']);
+                    }
+
+                }elseif($data['rol_id']['rol_id'] == 2){
+
+                    if($roleClient){
+
+                        if(!$roleAdmin){
+                            Rol::create(['nombre_rol' => 'Administrador']);
+                        }
+
+                    }elseif(!$roleClient){
+                        
+                        Rol::create(['nombre_rol' => 'Cliente']);
+                        Rol::create(['nombre_rol' => 'Administrador']);
+                        
+                    }
 
                 }
 
@@ -530,7 +544,7 @@ class UsuarioController extends Controller
                             //Envio el email de restablecimiento: 
                             $email = new RecoverdPassword;
 
-                            Mail::to('javimausp0801@gmail.com')->send($email);
+                            Mail::to($validate['email'])->send($email);
 
                             //valido la fecha actual con la de expiracion: 
                             if($currentDate->format('Y-m-d H:i:s') != $dateOfExpire){
@@ -593,7 +607,7 @@ class UsuarioController extends Controller
                             //Envio el email de restablecimiento: 
                             $email = new RecoverdPassword;
 
-                            Mail::to('javimausp0801@gmail.com')->send($email);
+                            Mail::to($validate['email'])->send($email);
 
                             //valido la fecha actual con la de expiracion: 
                             if($currentDate->format('Y-m-d H:i:s') != $dateOfExpire){
