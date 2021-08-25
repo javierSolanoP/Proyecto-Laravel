@@ -72,21 +72,16 @@ class UsuarioController extends Controller
 
                     if(!$roleClient){
                         Rol::create(['nombre_rol' => 'Cliente']);
+                        Rol::create(['nombre_rol' => 'Administrador']);
                     }
 
                 }elseif($data['rol_id']['rol_id'] == 2){
 
-                    if($roleClient){
+                    if(!$roleClient && !$roleAdmin){
 
-                        if(!$roleAdmin){
-                            Rol::create(['nombre_rol' => 'Administrador']);
-                        }
-
-                    }elseif(!$roleClient){
-                        
                         Rol::create(['nombre_rol' => 'Cliente']);
                         Rol::create(['nombre_rol' => 'Administrador']);
-                        
+
                     }
 
                 }
